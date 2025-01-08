@@ -201,6 +201,30 @@ server.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/snake.dir/build.make CMakeFiles/snake.dir/server.c.s
 .PHONY : server.c.s
 
+socket.o: socket.c.o
+.PHONY : socket.o
+
+# target to build an object file
+socket.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/snake.dir/build.make CMakeFiles/snake.dir/socket.c.o
+.PHONY : socket.c.o
+
+socket.i: socket.c.i
+.PHONY : socket.i
+
+# target to preprocess a source file
+socket.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/snake.dir/build.make CMakeFiles/snake.dir/socket.c.i
+.PHONY : socket.c.i
+
+socket.s: socket.c.s
+.PHONY : socket.s
+
+# target to generate assembly for a file
+socket.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/snake.dir/build.make CMakeFiles/snake.dir/socket.c.s
+.PHONY : socket.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -219,6 +243,9 @@ help:
 	@echo "... server.o"
 	@echo "... server.i"
 	@echo "... server.s"
+	@echo "... socket.o"
+	@echo "... socket.i"
+	@echo "... socket.s"
 .PHONY : help
 
 

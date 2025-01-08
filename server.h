@@ -1,6 +1,6 @@
 #ifndef SERVER_H
 #define SERVER_H
-
+#define BUFFER_SIZE 1024
 typedef struct {
     int x, y;   
     int dx, dy; 
@@ -18,4 +18,8 @@ void update_board(char *board, int rows, int cols, snake_t *snake, int fruit_x, 
 void load_game_world(char *file, char *board, int rows, int cols);
 int check_collision(snake_t *snake);
 
+void send_board_to_client(int socket, char *board, int rows, int cols);
+void handle_client_input(int socket, snake_t *snake);
+void server_game_loop(int socket);
+int start_server(int port);
 #endif

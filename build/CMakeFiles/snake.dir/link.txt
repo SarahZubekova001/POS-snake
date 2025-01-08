@@ -1,1 +1,1 @@
-/usr/bin/cc CMakeFiles/snake.dir/main.c.o CMakeFiles/snake.dir/server.c.o CMakeFiles/snake.dir/client.c.o -o snake 
+/usr/bin/cc CMakeFiles/snake.dir/main.c.o CMakeFiles/snake.dir/server.c.o CMakeFiles/snake.dir/client.c.o CMakeFiles/snake.dir/socket.c.o -o snake 

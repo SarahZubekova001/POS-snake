@@ -12,11 +12,19 @@ int passive_socket_init(const int port) {
   int passSock;
   struct sockaddr_in servAddr;
   // Vytvorenie schránky pre komunikáciu cez internet
+  int opt = 1;
   passSock = socket(AF_INET, SOCK_STREAM, 0);
   if (passSock < 0) {
     perror("Chyba pri vytvarani schranky");
     return -1;
   }
+  
+  if (setsockopt(passSock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
+        perror("Chyba pri nastavovani SO_REUSEADDR");
+        close(passSock);
+        return -1;
+    }
+	
   // Nastavenie adresy pre potreby komunikácie
   memset((char*)&servAddr, 0, sizeof(servAddr));
   servAddr.sin_family = AF_INET;

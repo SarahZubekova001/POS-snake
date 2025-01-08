@@ -11,6 +11,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/zubekova4/semka/client.c" "CMakeFiles/snake.dir/client.c.o" "gcc" "CMakeFiles/snake.dir/client.c.o.d"
   "/home/zubekova4/semka/main.c" "CMakeFiles/snake.dir/main.c.o" "gcc" "CMakeFiles/snake.dir/main.c.o.d"
   "/home/zubekova4/semka/server.c" "CMakeFiles/snake.dir/server.c.o" "gcc" "CMakeFiles/snake.dir/server.c.o.d"
+  "/home/zubekova4/semka/socket.c" "CMakeFiles/snake.dir/socket.c.o" "gcc" "CMakeFiles/snake.dir/socket.c.o.d"
   )
 
 # Targets to which this target links.

@@ -1,121 +1,53 @@
-#include "server.h"
 #include "client.h"
+#include "server.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <time.h>
-#include <string.h>
+#include <sys/types.h>
+#include <signal.h>
 
-int random_in_range(int min, int max) {
-    return rand() % (max - min + 1) + min;
-}
+void start_new_game() {
+    pid_t pid = fork(); // Vytvorenie nového procesu
 
-void start_game(int rows, int cols, int game_mode) {
-    char *board = malloc(rows * cols * sizeof(char));
-    snake_t snake;
-    int fruit_x, fruit_y;
-    int score = 0;
-    int time_limit = 0;
-    int speed = 100000; // Rýchlosť hry (v mikrosekundách)
-
-    init_snake(&snake, rows, cols);
-    srand(time(NULL));
-    fruit_x = random_in_range(0, cols - 1);
-    fruit_y = random_in_range(0, rows - 1);
-
-    if (game_mode == 2) {
-        printf("Enter time limit in seconds: ");
-        scanf("%d", &time_limit);
+    if (pid < 0) {
+        perror("Failed to fork");
+        exit(1);
     }
 
-    time_t start_time = time(NULL);
+    if (pid == 0) {
+        // Toto je child process - spustíme server
+        printf("Starting server process...\n");
+        start_server(12345);
+        exit(0); // Po skončení servera ukončíme proces
+    } else {
+        // Toto je parent process - spustíme klienta
+        sleep(1); // Počkáme, kým server začne počúvať
+        printf("Starting client process...\n");
+        start_client("localhost", 12345);
 
-    while (1) {
-        system("clear");
-
-        // Aktualizácia herného poľa a zobrazenie
-        update_board(board, rows, cols, &snake, fruit_x, fruit_y);
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                printf("%c ", board[i * cols + j]);
-            }
-            printf("\n");
-        }
-        printf("Score: %d\n", score);
-
-        if (game_mode == 2) {
-            int elapsed_time = time(NULL) - start_time;
-            printf("Time left: %d seconds\n", time_limit - elapsed_time);
-            if (elapsed_time >= time_limit) {
-                printf("Time's up! Game Over.\n");
-                break;
-            }
-        }
-
-        // Skontrolujte, či je k dispozícii vstup od hráča na zmenu smeru
-        char ch;
-        if ((ch = get_player_input()) != -1) {
-            if (ch == 'w' && snake.dy == 0) { snake.dx = 0; snake.dy = -1; }
-            if (ch == 's' && snake.dy == 0) { snake.dx = 0; snake.dy = 1; }
-            if (ch == 'a' && snake.dx == 0) { snake.dx = -1; snake.dy = 0; }
-            if (ch == 'd' && snake.dx == 0) { snake.dx = 1; snake.dy = 0; }
-            if (ch == 'q') {
-                printf("Game over! You quit the game.\n");
-                break;
-            }
-        }
-
-        // Posuňte hadíka
-        move_snake(&snake, rows, cols);
-
-        if (check_collision(&snake)) {
-            printf("Game Over! You hit yourself.\n");
-            break;
-        }
-
-        // Ak hadík zje ovocie, zvýši sa skóre a hadík narastie
-        if (snake.x == fruit_x && snake.y == fruit_y) {
-            grow_snake(&snake, rows, cols);
-            score++;
-            fruit_x = random_in_range(0, cols - 1);
-            fruit_y = random_in_range(0, rows - 1);
-
-        }
-
-        // Časový interval pre pohyb hadíka
-        usleep(speed);
+        // Po skončení klienta skontrolujeme, či server proces stále beží
+        int status;
+        waitpid(pid, &status, 0); // Počkáme na ukončenie serverového procesu
+        printf("Game ended. Returning to menu...\n");
     }
-
-    free(board);
-    free(snake.body_x);
-    free(snake.body_y);
 }
-
 
 int main() {
-
     while (1) {
         display_menu();
-        int choice, rows, cols, game_mode;
-        choice = get_menu_choice();
+        int choice = get_menu_choice();
 
         switch (choice) {
             case 1:
-                game_mode = select_game_mode();
-                get_board_size(&rows, &cols);
-                start_game(rows, cols, game_mode);
+                start_new_game();
                 break;
 
             case 2:
-                printf("Feature not implemented yet: Join Existing Game\n");
+                printf("Resume Game feature is not implemented yet.\n");
                 break;
 
             case 3:
-                printf("Feature not implemented yet: Resume Game\n");
-                break;
-
-            case 4:
-                printf("Exiting game. Goodbye!\n");
+                printf("Exiting... Goodbye!\n");
                 return 0;
 
             default:

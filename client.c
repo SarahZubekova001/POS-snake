@@ -1,26 +1,40 @@
 #include "client.h"
+#include "socket.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <termios.h>
+#include <pthread.h>
+#include <string.h>
 #include <unistd.h>
+#include <termios.h>
 #include <fcntl.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
-void save_game_world(char *filename, char *board, int rows, int cols) {
+typedef struct {
+    int socket;
+    int rows;
+    int cols;
+    char *board;
+    int running;
+} client_data_t;
+
+void save_game_world(const char *filename, const char *board, int rows, int cols) {
     FILE *file = fopen(filename, "w");
     if (!file) {
-        printf("Failed to open file \n");
-      return;
-    } 
-      for (int i = 0; i < rows; i++) {
+        printf("Failed to open file for saving.");
+        return;
+    }
+    for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
             fprintf(file, "%c ", board[i * cols + j]);
         }
         fprintf(file, "\n");
-      } 
-    
+    }
     fclose(file);
 }
-void render_game_world(char *board, int rows, int cols, int score) {
+
+void render_game_world(const char *board, int rows, int cols, int score) {
     system("clear");
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
@@ -32,24 +46,18 @@ void render_game_world(char *board, int rows, int cols, int score) {
 }
 
 char get_player_input() {
-	struct termios oldt, newt;
+    struct termios oldt, newt;
     char input = -1;
 
-    // Získanie aktuálneho nastavenia terminálu
     tcgetattr(STDIN_FILENO, &oldt);
     newt = oldt;
-
-    // Vypnutie kanonického režimu a echo
     newt.c_lflag &= ~(ICANON | ECHO);
     tcsetattr(STDIN_FILENO, TCSANOW, &newt);
 
-    // Nastavenie neblokujúceho čítania
     fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK);
 
-    // Pokus o čítanie vstupu
     input = getchar();
 
-    // Obnovenie pôvodného nastavenia terminálu
     tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
     fcntl(STDIN_FILENO, F_SETFL, 0);
 
@@ -59,15 +67,13 @@ char get_player_input() {
 void display_menu() {
     printf("=== Snake Game Menu ===\n");
     printf("1. Start New Game\n");
-    printf("2. Join Existing Game\n");
-    printf("3. Resume Game\n");
-    printf("4. Exit\n");
+    printf("2. Resume Game\n");
+    printf("3. Exit\n");
     printf("Enter your choice: ");
 }
 
 int get_menu_choice() {
     int choice;
-    printf("Enter your choice: ");
     while (scanf("%d", &choice) != 1) {
         while (getchar() != '\n');
         printf("Invalid input. Please enter a number: ");
@@ -108,5 +114,107 @@ void get_board_size(int *rows, int *cols) {
         }
         break;
     }
+}
+
+void *handle_user_input(void *arg) {
+    client_data_t *data = (client_data_t *)arg;
+    char input;
+
+    while (data->running) {
+        input = get_player_input();
+        if (input != -1) {
+            if (input == 'q') {
+                data->running = 0;
+                send(data->socket, &input, 1, 0);
+                break;
+            } else {
+                send(data->socket, &input, 1, 0);
+            }
+        }
+        usleep(100000);
+    }
+    return NULL;
+}
+
+void *handle_server_updates(void *arg) {
+    client_data_t *data = (client_data_t *)arg;
+
+    while (data->running) {
+        int received = recv(data->socket, data->board, data->rows * data->cols, 0);
+        if (received > 0) {
+            render_game_world(data->board, data->rows, data->cols, 0);
+        } else {
+            printf("Lost connection to server.\n");
+            data->running = 0;
+        }
+		int score;
+        received = recv(data->socket, &score, sizeof(score), 0);
+        if (received <= 0) {
+            printf("Lost connection to server.\n");
+            data->running = 0;
+            break;
+        }
+
+        
+        render_game_world(data->board, data->rows, data->cols, score);
+
+        usleep(10000);
+    }
+    return NULL;
+}
+
+void start_client(const char *server_address, int port) {
+    int client_socket = connect_to_server(server_address, port);
+    if (client_socket < 0) {
+        perror("Failed to connect to server");
+        return;
+    }
+
+    printf("Connected to server!\n");
+
+    int rows, cols;
+    get_board_size(&rows, &cols); 
+    send(client_socket, &rows, sizeof(rows), 0); 
+    send(client_socket, &cols, sizeof(cols), 0); 
+
+	sleep(1);
+	int game_mode = select_game_mode();
+    send(client_socket, &game_mode, sizeof(game_mode), 0);
+	if (game_mode == 2) { 
+        int time_limit;
+        printf("Enter time limit in seconds: ");
+        while (scanf("%d", &time_limit) != 1 || time_limit <= 0) {
+            while (getchar() != '\n');
+            printf("Invalid input. Please enter a positive number: ");
+        }
+        send(client_socket, &time_limit, sizeof(time_limit), 0); 
+    }
+
+    char *board = malloc(rows * cols * sizeof(char));
+    client_data_t data = {client_socket, rows, cols, board, 1};
+
+    pthread_t input_thread, update_thread;
+
+    if (pthread_create(&input_thread, NULL, handle_user_input, &data) != 0) {
+        perror("Failed to create input thread");
+        free(board);
+        close(client_socket);
+        return;
+    }
+
+    if (pthread_create(&update_thread, NULL, handle_server_updates, &data) != 0) {
+        perror("Failed to create update thread");
+        data.running = 0;
+        pthread_join(input_thread, NULL);
+        free(board);
+        close(client_socket);
+        return;
+    }
+
+    pthread_join(input_thread, NULL);
+    pthread_join(update_thread, NULL);
+
+    free(board);
+    close(client_socket);
 }
 
