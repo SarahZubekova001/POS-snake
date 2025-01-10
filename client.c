@@ -97,6 +97,47 @@ int select_game_mode() {
     return mode;
 }
 
+int select_world_type() {
+    int world_type;
+    printf("\nSelect World Type:\n");
+    printf("1. World without obstacles\n");
+    printf("2. World with obstacles\n");
+    while (1) {
+        printf("Enter your choice: ");
+        if (scanf("%d", &world_type) == 1 && (world_type == 1 || world_type == 2)) {
+            break;
+        }
+        while (getchar() != '\n');
+        printf("Invalid choice. Please enter 1 or 2.\n");
+    }
+    return world_type;
+}
+
+void setup_obstacles(int client_socket) {
+    int obstacle_option;
+    printf("\nSelect obstacle generation method:\n");
+    printf("1. Load from file\n");
+    printf("2. Generate randomly\n");
+    while (1) {
+        printf("Enter your choice: ");
+        if (scanf("%d", &obstacle_option) == 1 && (obstacle_option == 1 || obstacle_option == 2)) {
+            break;
+        }
+        while (getchar() != '\n');
+        printf("Invalid choice. Please enter 1 or 2.\n");
+    }
+	printf("posielam modznost %d \n", obstacle_option);
+    send(client_socket, &obstacle_option, sizeof(obstacle_option), 0);
+
+    if (obstacle_option == 1) { // Načítanie zo súboru
+        char filename[256];
+        printf("Enter the filename for obstacles: ");
+        scanf("%s", filename);
+        send(client_socket, filename, sizeof(filename), 0);
+    } 
+}
+
+
 void get_board_size(int *rows, int *cols) {
     while (1) {
         printf("\nEnter the size of the game board:\n");
@@ -171,7 +212,13 @@ void start_client(const char *server_address, int port) {
     }
 
     printf("Connected to server!\n");
+	int world_type = select_world_type();
+    send(client_socket, &world_type, sizeof(world_type), 0);
 
+    if (world_type == 2) { // Svet s prekážkami
+        setup_obstacles(client_socket);
+    }
+	
     int rows, cols;
     get_board_size(&rows, &cols); 
     send(client_socket, &rows, sizeof(rows), 0); 
@@ -217,4 +264,3 @@ void start_client(const char *server_address, int port) {
     free(board);
     close(client_socket);
 }
-

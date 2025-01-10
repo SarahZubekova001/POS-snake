@@ -12,10 +12,11 @@ typedef struct {
 void init_snake(snake_t *snake, int rows, int cols);
 void move_snake(snake_t *snake, int rows, int cols);
 void grow_snake(snake_t *snake, int rows, int cols);
-void generate_fruit(int *fruit_x, int *fruit_y, int rows, int cols);
-void update_board(char *board, int rows, int cols, snake_t *snake, int fruit_x, int fruit_y);
+void generate_fruit(char *board, int *fruit_x, int *fruit_y, int rows, int cols);
+void update_board(char *board, int rows, int cols, snake_t *snake, int fruit_x, int fruit_y, char *obstacles);
 
-void load_game_world(char *file, char *board, int rows, int cols);
+void load_obstacles_from_file(const char *filename, char *board, int rows, int cols);
+void generate_obstacles(char *board, int rows, int cols);
 int check_collision(snake_t *snake);
 
 void send_board_to_client(int socket, char *board, int rows, int cols);
