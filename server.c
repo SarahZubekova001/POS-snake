@@ -11,6 +11,7 @@
 #include <arpa/inet.h>
 
 
+
 void init_snake(snake_t *snake, int rows, int cols) {
     snake->x = cols / 2;
     snake->y = rows / 2;
@@ -70,10 +71,9 @@ void grow_snake(snake_t *snake, int rows, int cols) {
 }
 
 void generate_fruit(char *board, int *fruit_x, int *fruit_y, int rows, int cols) {
-    printf("Generujem ovocie...\n");
     srand(time(NULL));
     int attempts = 0;
-    int max_attempts = rows * cols; // Maximálny počet pokusov, kým skončíme
+    int max_attempts = rows * cols; 
 
     do {
         *fruit_x = rand() % cols;
@@ -82,7 +82,7 @@ void generate_fruit(char *board, int *fruit_x, int *fruit_y, int rows, int cols)
 
         if (attempts > max_attempts) {
             printf("Nepodarilo sa nájsť voľné miesto pre ovocie po %d pokusoch. Plocha je pravdepodobne plná.\n", attempts);
-            return; // Ukončíme generovanie ovocia
+            return; 
         }
     } while (board[*fruit_y * cols + *fruit_x] != '.');
 }
@@ -152,7 +152,6 @@ void server_game_loop(int client_socket) {
     }
 	
 	recv(client_socket, &game_mode, sizeof(game_mode), 0);
-	printf("mod hry %d \n", game_mode);
 	
 	if (game_mode == 2) { 
         recv(client_socket, &time_limit, sizeof(time_limit), 0); 

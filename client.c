@@ -35,7 +35,7 @@ void save_game_world(const char *filename, const char *board, int rows, int cols
 }
 
 void render_game_world(const char *board, int rows, int cols, int score) {
-    system("clear");
+    printf("\033[H\033[J"); 
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
             printf("%c ", board[i * cols + j]);
@@ -44,6 +44,8 @@ void render_game_world(const char *board, int rows, int cols, int score) {
     }
     printf("Score: %d\n", score);
 }
+
+
 
 char get_player_input() {
     struct termios oldt, newt;
