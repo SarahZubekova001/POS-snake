@@ -17,7 +17,7 @@ void update_board(char *board, int rows, int cols, snake_t *snake, int fruit_x, 
 
 void load_obstacles_from_file(const char *filename, char *board, int rows, int cols);
 void generate_obstacles(char *board, int rows, int cols);
-int check_collision(snake_t *snake);
+int check_collision(snake_t *snake, char *board, int cols);
 
 void send_board_to_client(int socket, char *board, int rows, int cols);
 void handle_client_input(int socket, snake_t *snake);

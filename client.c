@@ -126,10 +126,9 @@ void setup_obstacles(int client_socket) {
         while (getchar() != '\n');
         printf("Invalid choice. Please enter 1 or 2.\n");
     }
-	printf("posielam modznost %d \n", obstacle_option);
     send(client_socket, &obstacle_option, sizeof(obstacle_option), 0);
 
-    if (obstacle_option == 1) { // Načítanie zo súboru
+    if (obstacle_option == 1) { 
         char filename[256];
         printf("Enter the filename for obstacles: ");
         scanf("%s", filename);
@@ -196,7 +195,6 @@ void *handle_server_updates(void *arg) {
             break;
         }
 
-        
         render_game_world(data->board, data->rows, data->cols, score);
 
         usleep(10000);
@@ -215,7 +213,7 @@ void start_client(const char *server_address, int port) {
 	int world_type = select_world_type();
     send(client_socket, &world_type, sizeof(world_type), 0);
 
-    if (world_type == 2) { // Svet s prekážkami
+    if (world_type == 2) { 
         setup_obstacles(client_socket);
     }
 	

@@ -20,12 +20,12 @@ int main() {
                 }
 
                 if (pid == 0) {
-                    // Toto je child process - spustíme server
+                    // child process - spustíme server
                     printf("Starting server process...\n");
                     start_server(12345);
                     exit(0);
                 } else {
-                    // Toto je parent process - spustíme klienta
+                    // parent process - spustíme klienta
                     sleep(1); // Počkáme, kým server začne počúvať
                     printf("Starting client process...\n");
                     start_client("localhost", 12345);

@@ -48,19 +48,27 @@ void move_snake(snake_t *snake, int rows, int cols) {
     snake->body_y[0] = snake->y;
 }
 
-int check_collision(snake_t *snake) {
+int check_collision(snake_t *snake, char *board, int cols) {
     for (int i = 1; i < snake->length; i++) {
         if (snake->x == snake->body_x[i] && snake->y == snake->body_y[i]) {
-            return 1;
+            return 1; 
         }
     }
+
+    // Kontrola kolízie s prekážkou
+    if (board[snake->y * cols + snake->x] == 'X') {
+        return 1; 
+    }
+
     return 0; 
 }
+
 void grow_snake(snake_t *snake, int rows, int cols) {
     if (snake->length < rows * cols) {
         snake->length++;
     }
 }
+
 void generate_fruit(char *board, int *fruit_x, int *fruit_y, int rows, int cols) {
     printf("Generujem ovocie...\n");
     srand(time(NULL));
@@ -71,29 +79,23 @@ void generate_fruit(char *board, int *fruit_x, int *fruit_y, int rows, int cols)
         *fruit_x = rand() % cols;
         *fruit_y = rand() % rows;
         attempts++;
-        printf("Skúšam pozíciu: (%d, %d), pokus: %d\n", *fruit_y, *fruit_x, attempts);
 
         if (attempts > max_attempts) {
             printf("Nepodarilo sa nájsť voľné miesto pre ovocie po %d pokusoch. Plocha je pravdepodobne plná.\n", attempts);
             return; // Ukončíme generovanie ovocia
         }
     } while (board[*fruit_y * cols + *fruit_x] != '.');
-
-    printf("Ovocie umiestnené na pozícii: (%d, %d)\n", *fruit_y, *fruit_x);
 }
 
 
 
 void update_board(char *board, int rows, int cols, snake_t *snake, int fruit_x, int fruit_y, char *obstacles) {
-    // 1. Skopíruj prekážky do herného sveta
     memcpy(board, obstacles, rows * cols);
 
-    // 2. Aktualizácia hada
     for (int i = 0; i < snake->length; i++) {
-        board[snake->body_y[i] * cols + snake->body_x[i]] = (i == 0) ? 'O' : 'o'; // Hlava a telo hada
+        board[snake->body_y[i] * cols + snake->body_x[i]] = (i == 0) ? 'O' : 'o'; 
     }
 
-    // 3. Pridanie ovocia
     board[fruit_y * cols + fruit_x] = 'F';
 }
 
@@ -101,26 +103,21 @@ void update_board(char *board, int rows, int cols, snake_t *snake, int fruit_x, 
 void server_game_loop(int client_socket) {
     int rows, cols, game_mode, time_limit = 0, world_type, obstacle_option = 0;
 
-    // 1. Prijímame typ sveta
     if (recv(client_socket, &world_type, sizeof(world_type), 0) <= 0) {
         perror("Chyba pri prijímaní world_type");
         close(client_socket);
         return;
     }
-    printf("typ svete je cislo : %d\n", world_type);
 
-    // 2. Ak sú vybrané prekážky, prijmeme spôsob ich generovania
     if (world_type == 2) {
         if (recv(client_socket, &obstacle_option, sizeof(obstacle_option), 0) <= 0) {
             perror("Chyba pri prijímaní obstacle_option");
             close(client_socket);
             return;
         }
-        printf("prijata moznost prekazok: %d\n", obstacle_option);
     }
 
 	
-    // 3. Prijímame rozmery hernej plochy
     if (recv(client_socket, &rows, sizeof(rows), 0) <= 0) {
         perror("Chyba pri prijímaní rows");
         close(client_socket);
@@ -133,7 +130,6 @@ void server_game_loop(int client_socket) {
     }
     printf("Rozmery: rows = %d, cols = %d\n", rows, cols);
 
-    // 4. Dynamická alokácia pre prekážky
     char *obstacles = malloc(rows * cols * sizeof(char));
     if (!obstacles) {
         perror("Chyba pri alokácii pamäte pre obstacles");
@@ -142,7 +138,6 @@ void server_game_loop(int client_socket) {
     }
     memset(obstacles, '.', rows * cols);
 
-    // 5. Ak bola vybraná možnosť načítať prekážky zo súboru
     if (world_type == 2 && obstacle_option == 1) {
         char filename[256];
         if (recv(client_socket, filename, sizeof(filename), 0) <= 0) {
@@ -151,7 +146,6 @@ void server_game_loop(int client_socket) {
             close(client_socket);
             return;
         }
-        printf("Načítavanie prekážok zo súboru: %s\n", filename);
         load_obstacles_from_file(filename, obstacles, rows, cols);
     } else if (world_type == 2 && obstacle_option == 2) {
         generate_obstacles(obstacles, rows, cols);
@@ -169,7 +163,6 @@ void server_game_loop(int client_socket) {
     char *board = malloc(rows * cols * sizeof(char));
     int fruit_x, fruit_y;
     int score = 0;
-	printf("Teraz by  malo vytvorit hadika a generovat ovocie \n");
     init_snake(&snake, rows, cols);
     generate_fruit(board, &fruit_x, &fruit_y, rows, cols);
 	
@@ -192,10 +185,10 @@ void server_game_loop(int client_socket) {
         }
 
         move_snake(&snake, rows, cols);
-        if (check_collision(&snake)) {
-            printf("Game Over! Collision detected.\n");
-            break;
-        }
+        if (check_collision(&snake, board, cols)) {
+        printf("Game Over! Collision detected.\n");
+        break;
+    }
 
         if (snake.x == fruit_x && snake.y == fruit_y) {
             grow_snake(&snake, rows, cols);
@@ -247,7 +240,6 @@ void load_obstacles_from_file(const char *filename, char *board, int rows, int c
         return;
     }
 
-    // Načítavame obsah súboru do poľa board
     int i = 0, j = 0;
     char c;
     while ((c = fgetc(file)) != EOF && i < rows) {
@@ -271,9 +263,8 @@ void generate_obstacles(char *board, int rows, int cols) {
     for (int i = 0; i < 5; i++) {
         int x = rand() % rows;
         int y = rand() % cols;
-        if (board[x * cols + y] == '.') { // Vyhneme sa kolízii s inými prekážkami
+        if (board[x * cols + y] == '.') { 
             board[x * cols + y] = 'X';
         }
     }
 }
-
