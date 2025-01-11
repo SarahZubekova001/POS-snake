@@ -22,13 +22,13 @@ int main() {
                 if (pid == 0) {
                     // child process - spustíme server
                     printf("Starting server process...\n");
-                    start_server(12345);
+                    start_server(50200);
                     exit(0);
                 } else {
                     // parent process - spustíme klienta
                     sleep(1); // Počkáme, kým server začne počúvať
                     printf("Starting client process...\n");
-                    start_client("localhost", 12345);
+                    start_client("localhost", 50200);
 					
 					printf("Game ended. Returning to menu...\n");
                 }
