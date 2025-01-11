@@ -205,14 +205,14 @@ int start_server(int port) {
         return -1;
     }
 
-    printf("Waiting for a client to connect...\n");
+    //printf("Waiting for a client to connect...\n");
     int client_socket = passive_socket_wait_for_client(server_socket);
     if (client_socket < 0) {
         perror("Failed to accept client.\n");
         return -1;
     }
 
-    printf("Client connected. Starting game...\n");
+    //printf("Client connected. Starting game...\n");
     server_game_loop(client_socket);
 
     close(client_socket);
