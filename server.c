@@ -167,6 +167,10 @@ void server_game_loop(int client_socket) {
                 printf("Client disconnected.\n");
                 break;
             }
+			if (input == 'p') {
+                printf("Paused game.\n");
+				break;
+			}
         }
 
         move_snake(&snake, rows, cols);

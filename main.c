@@ -6,7 +6,7 @@
 #include <sys/types.h>
 
 int main() {
-    while (1) {
+    
         display_menu();
         int choice = get_menu_choice();
 		
@@ -36,7 +36,7 @@ int main() {
             }
 
             case 2:
-                printf("Resume Game feature is not implemented yet.\n");
+                printf("Resume Game feature works only during pause. Start a new game first.\n");
                 break;
 
             case 3:
@@ -46,7 +46,7 @@ int main() {
             default:
                 printf("Invalid choice. Please try again.\n");
         }
-    }
+    
 
     return 0;
 }
