@@ -45,8 +45,6 @@ void render_game_world(const char *board, int rows, int cols, int score) {
     printf("Score: %d\n", score);
 }
 
-
-
 char get_player_input() {
     struct termios oldt, newt;
     char input = -1;
@@ -115,30 +113,6 @@ int select_world_type() {
     return world_type;
 }
 
-void setup_obstacles(int client_socket) {
-    int obstacle_option;
-    printf("\nSelect obstacle generation method:\n");
-    printf("1. Load from file\n");
-    printf("2. Generate randomly\n");
-    while (1) {
-        printf("Enter your choice: ");
-        if (scanf("%d", &obstacle_option) == 1 && (obstacle_option == 1 || obstacle_option == 2)) {
-            break;
-        }
-        while (getchar() != '\n');
-        printf("Invalid choice. Please enter 1 or 2.\n");
-    }
-    send(client_socket, &obstacle_option, sizeof(obstacle_option), 0);
-
-    if (obstacle_option == 1) { 
-        char filename[256];
-        printf("Enter the filename for obstacles: ");
-        scanf("%s", filename);
-        send(client_socket, filename, sizeof(filename), 0);
-    } 
-}
-
-
 void get_board_size(int *rows, int *cols) {
     while (1) {
         printf("\nEnter the size of the game board:\n");
@@ -189,7 +163,7 @@ void *handle_server_updates(void *arg) {
             printf("Lost connection to server.\n");
             data->running = 0;
         }
-		int score;
+        int score;
         received = recv(data->socket, &score, sizeof(score), 0);
         if (received <= 0) {
             printf("Lost connection to server.\n");
@@ -212,22 +186,18 @@ void start_client(const char *server_address, int port) {
     }
 
     printf("Connected to server!\n");
-	int world_type = select_world_type();
+    int world_type = select_world_type();
     send(client_socket, &world_type, sizeof(world_type), 0);
 
-    if (world_type == 2) { 
-        setup_obstacles(client_socket);
-    }
-	
     int rows, cols;
     get_board_size(&rows, &cols); 
     send(client_socket, &rows, sizeof(rows), 0); 
     send(client_socket, &cols, sizeof(cols), 0); 
 
-	sleep(1);
-	int game_mode = select_game_mode();
+    sleep(1);
+    int game_mode = select_game_mode();
     send(client_socket, &game_mode, sizeof(game_mode), 0);
-	if (game_mode == 2) { 
+    if (game_mode == 2) { 
         int time_limit;
         printf("Enter time limit in seconds: ");
         while (scanf("%d", &time_limit) != 1 || time_limit <= 0) {
