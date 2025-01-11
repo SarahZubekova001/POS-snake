@@ -29,8 +29,6 @@ int main() {
                     sleep(1); // Počkáme, kým server začne počúvať
                     printf("Starting client process...\n");
                     start_client("localhost", 50200);
-					
-					printf("Game ended. Returning to menu...\n");
                 }
                 break;
             }

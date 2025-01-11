@@ -107,23 +107,17 @@ void generate_obstacles(char *board, int rows, int cols) {
 void server_game_loop(int client_socket) {
     int rows, cols, game_mode, time_limit = 0, world_type;
 
-    if (recv(client_socket, &world_type, sizeof(world_type), 0) <= 0) {
-        perror("Error receiving world_type");
-        close(client_socket);
-        return;
-    }
-
-    if (recv(client_socket, &rows, sizeof(rows), 0) <= 0) {
-        perror("Error receiving rows");
-        close(client_socket);
-        return;
-    }
-    if (recv(client_socket, &cols, sizeof(cols), 0) <= 0) {
-        perror("Error receiving cols");
-        close(client_socket);
-        return;
-    }
-    printf("Dimensions: rows = %d, cols = %d\n", rows, cols);
+    recv(client_socket, &world_type, sizeof(world_type), 0);
+    
+	recv(client_socket, &game_mode, sizeof(game_mode), 0);
+	
+	if (game_mode == 2) { 
+        recv(client_socket, &time_limit, sizeof(time_limit), 0); 
+	}
+	
+    recv(client_socket, &rows, sizeof(rows), 0) ;
+    recv(client_socket, &cols, sizeof(cols), 0);
+    //printf("Dimensions: rows = %d, cols = %d\n", rows, cols);
 
     char *obstacles = malloc(rows * cols * sizeof(char));
     if (!obstacles) {
@@ -137,12 +131,6 @@ void server_game_loop(int client_socket) {
         generate_obstacles(obstacles, rows, cols);
     }
 
-    recv(client_socket, &game_mode, sizeof(game_mode), 0);
-
-    if (game_mode == 2) {
-        recv(client_socket, &time_limit, sizeof(time_limit), 0);
-        printf("Time Mode selected. Time limit: %d seconds.\n", time_limit);
-    }
 
     snake_t snake;
     char *board = malloc(rows * cols * sizeof(char));
@@ -192,6 +180,7 @@ void server_game_loop(int client_socket) {
         }
         usleep(200000);
     }
+	
     free(obstacles);
     free(board);
     free(snake.body_x);
@@ -214,7 +203,6 @@ int start_server(int port) {
 
     //printf("Client connected. Starting game...\n");
     server_game_loop(client_socket);
-
     close(client_socket);
     close(server_socket);
     return 0;

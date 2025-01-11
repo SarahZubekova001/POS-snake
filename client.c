@@ -164,13 +164,11 @@ void *handle_server_updates(void *arg) {
         if (received > 0) {
             render_game_world(data->board, data->rows, data->cols, 0);
         } else {
-            printf("Lost connection to server.\n");
             data->running = 0;
         }
         int score;
         received = recv(data->socket, &score, sizeof(score), 0);
         if (received <= 0) {
-            printf("Lost connection to server.\n");
             data->running = 0;
             break;
         }
@@ -192,6 +190,18 @@ void start_client(const char *server_address, int port) {
     //printf("Connected to server!\n");
 	int world_type = select_world_type();
     send(client_socket, &world_type, sizeof(world_type), 0);
+	
+	int game_mode = select_game_mode();
+    send(client_socket, &game_mode, sizeof(game_mode), 0);
+	if (game_mode == 2) { 
+        int time_limit;
+        printf("Enter time limit in seconds: ");
+        while (scanf("%d", &time_limit) != 1 || time_limit <= 0) {
+            while (getchar() != '\n');
+            printf("Invalid input. Please enter a positive number: ");
+        }
+		send(client_socket, &time_limit, sizeof(time_limit), 0); 
+	}
 	
     int rows, cols;
     get_board_size(&rows, &cols);
@@ -239,6 +249,13 @@ void start_client(const char *server_address, int port) {
 
     pthread_join(input_thread, NULL);
     pthread_join(update_thread, NULL);
+	
+
+    printf("Game Over! \n");
+	if (game_mode == 2) {
+		printf("Time's up! \n");
+	}
+
 
     free(board);
     close(client_socket);
