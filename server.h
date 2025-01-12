@@ -25,6 +25,6 @@ int check_collision(snake_t *snake, char *board, int cols);
 void send_board_to_client(int socket, char *board, int rows, int cols);
 void handle_client_input(int socket, snake_t *snake);
 void server_game_loop(int socket);
-int start_server(int port);
+int start_server();
 
 #endif

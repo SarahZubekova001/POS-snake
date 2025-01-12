@@ -12,5 +12,5 @@ void get_board_size(int *rows, int *cols);
 int select_world_type();
 void *handle_user_input(void *arg);
 void *handle_server_updates(void *arg);
-void start_client(const char *server_address, int port);
+void start_client();
 #endif

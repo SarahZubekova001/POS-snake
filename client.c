@@ -115,7 +115,7 @@ char get_player_input() {
 }
 
 void render_game_world(const char *board, int rows, int cols, int score) {
-    printf("\033[H\033[J"); 
+    printf("\033[H\033[J");
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
             printf("%c ", board[i * cols + j]);
@@ -123,6 +123,7 @@ void render_game_world(const char *board, int rows, int cols, int score) {
         printf("\n");
     }
     printf("Score: %d\n", score);
+	usleep(16000);
 }
 
 
@@ -141,7 +142,6 @@ void *handle_user_input(void *arg) {
                 } else if (input == 'p') {
                     data->paused = 1;
                     send(data->socket, &input, 1, 0);
-                    printf("Game paused. Returning to menu...\n");
                 } else {
                     send(data->socket, &input, 1, 0); 
                 }
@@ -180,8 +180,13 @@ void *handle_server_updates(void *arg) {
     return NULL;
 }
 
-void start_client(const char *server_address, int port) {
-    int client_socket = connect_to_server(server_address, port);
+void start_client() {
+	
+
+    // Rodičovský proces pokračuje ako klient
+    //printf("Waiting for server to start...\n");
+     // Počkať, aby sa server inicializoval
+    int client_socket = connect_to_server("localhost", 50200);
     if (client_socket < 0) {
         perror("Failed to connect to server");
         return;
@@ -259,4 +264,31 @@ void start_client(const char *server_address, int port) {
 
     free(board);
     close(client_socket);
+}
+
+
+int main() {
+	
+	display_menu();
+    int choice = get_menu_choice();
+	
+	if(choice == 1){
+		pid_t pid = fork();
+
+		if (pid < 0) {
+			perror("Failed to fork");
+			return 1;
+		}
+
+		if (pid == 0) {
+			// Detský proces spustí server
+			//printf("Starting server process...\n");
+			execl("./server", "./server", NULL); 
+			perror("Failed to start server");
+			exit(1);
+		}
+		sleep(1);
+	}
+	start_client();
+	return 0;
 }

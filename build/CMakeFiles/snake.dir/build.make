@@ -69,38 +69,10 @@ include CMakeFiles/snake.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/snake.dir/flags.make
 
-CMakeFiles/snake.dir/main.c.o: CMakeFiles/snake.dir/flags.make
-CMakeFiles/snake.dir/main.c.o: /home/zubekova4/semka/main.c
-CMakeFiles/snake.dir/main.c.o: CMakeFiles/snake.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zubekova4/semka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/snake.dir/main.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/snake.dir/main.c.o -MF CMakeFiles/snake.dir/main.c.o.d -o CMakeFiles/snake.dir/main.c.o -c /home/zubekova4/semka/main.c
-
-CMakeFiles/snake.dir/main.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/snake.dir/main.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zubekova4/semka/main.c > CMakeFiles/snake.dir/main.c.i
-
-CMakeFiles/snake.dir/main.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/snake.dir/main.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zubekova4/semka/main.c -o CMakeFiles/snake.dir/main.c.s
-
-CMakeFiles/snake.dir/server.c.o: CMakeFiles/snake.dir/flags.make
-CMakeFiles/snake.dir/server.c.o: /home/zubekova4/semka/server.c
-CMakeFiles/snake.dir/server.c.o: CMakeFiles/snake.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zubekova4/semka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/snake.dir/server.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/snake.dir/server.c.o -MF CMakeFiles/snake.dir/server.c.o.d -o CMakeFiles/snake.dir/server.c.o -c /home/zubekova4/semka/server.c
-
-CMakeFiles/snake.dir/server.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/snake.dir/server.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zubekova4/semka/server.c > CMakeFiles/snake.dir/server.c.i
-
-CMakeFiles/snake.dir/server.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/snake.dir/server.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zubekova4/semka/server.c -o CMakeFiles/snake.dir/server.c.s
-
 CMakeFiles/snake.dir/client.c.o: CMakeFiles/snake.dir/flags.make
 CMakeFiles/snake.dir/client.c.o: /home/zubekova4/semka/client.c
 CMakeFiles/snake.dir/client.c.o: CMakeFiles/snake.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zubekova4/semka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/snake.dir/client.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zubekova4/semka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/snake.dir/client.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/snake.dir/client.c.o -MF CMakeFiles/snake.dir/client.c.o.d -o CMakeFiles/snake.dir/client.c.o -c /home/zubekova4/semka/client.c
 
 CMakeFiles/snake.dir/client.c.i: cmake_force
@@ -114,7 +86,7 @@ CMakeFiles/snake.dir/client.c.s: cmake_force
 CMakeFiles/snake.dir/socket.c.o: CMakeFiles/snake.dir/flags.make
 CMakeFiles/snake.dir/socket.c.o: /home/zubekova4/semka/socket.c
 CMakeFiles/snake.dir/socket.c.o: CMakeFiles/snake.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zubekova4/semka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object CMakeFiles/snake.dir/socket.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zubekova4/semka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/snake.dir/socket.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/snake.dir/socket.c.o -MF CMakeFiles/snake.dir/socket.c.o.d -o CMakeFiles/snake.dir/socket.c.o -c /home/zubekova4/semka/socket.c
 
 CMakeFiles/snake.dir/socket.c.i: cmake_force
@@ -127,21 +99,17 @@ CMakeFiles/snake.dir/socket.c.s: cmake_force
 
 # Object files for target snake
 snake_OBJECTS = \
-"CMakeFiles/snake.dir/main.c.o" \
-"CMakeFiles/snake.dir/server.c.o" \
 "CMakeFiles/snake.dir/client.c.o" \
 "CMakeFiles/snake.dir/socket.c.o"
 
 # External object files for target snake
 snake_EXTERNAL_OBJECTS =
 
-snake: CMakeFiles/snake.dir/main.c.o
-snake: CMakeFiles/snake.dir/server.c.o
 snake: CMakeFiles/snake.dir/client.c.o
 snake: CMakeFiles/snake.dir/socket.c.o
 snake: CMakeFiles/snake.dir/build.make
 snake: CMakeFiles/snake.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/zubekova4/semka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking C executable snake"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/zubekova4/semka/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking C executable snake"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/snake.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

@@ -77,7 +77,6 @@ void generate_fruit(char *board, int *fruit_x, int *fruit_y, int rows, int cols)
         attempts++;
 
         if (attempts > max_attempts) {
-            printf("Could not find a free spot for fruit after %d attempts. The board is likely full.\n", attempts);
             return; 
         }
     } while (board[*fruit_y * cols + *fruit_x] != '.');
@@ -108,16 +107,14 @@ void server_game_loop(int client_socket) {
     int rows, cols, game_mode, time_limit = 0, world_type;
 
     recv(client_socket, &world_type, sizeof(world_type), 0);
-    
-	recv(client_socket, &game_mode, sizeof(game_mode), 0);
-	
-	if (game_mode == 2) { 
-        recv(client_socket, &time_limit, sizeof(time_limit), 0); 
-	}
-	
-    recv(client_socket, &rows, sizeof(rows), 0) ;
+    recv(client_socket, &game_mode, sizeof(game_mode), 0);
+
+    if (game_mode == 2) {
+        recv(client_socket, &time_limit, sizeof(time_limit), 0);
+    }
+
+    recv(client_socket, &rows, sizeof(rows), 0);
     recv(client_socket, &cols, sizeof(cols), 0);
-    //printf("Dimensions: rows = %d, cols = %d\n", rows, cols);
 
     char *obstacles = malloc(rows * cols * sizeof(char));
     if (!obstacles) {
@@ -131,7 +128,6 @@ void server_game_loop(int client_socket) {
         generate_obstacles(obstacles, rows, cols);
     }
 
-
     snake_t snake;
     char *board = malloc(rows * cols * sizeof(char));
     int fruit_x, fruit_y;
@@ -140,55 +136,64 @@ void server_game_loop(int client_socket) {
     generate_fruit(board, &fruit_x, &fruit_y, rows, cols);
 
     time_t start_time = time(NULL);
+    int paused = 0; // Príznak pauzy
 
     while (1) {
-        update_board(board, rows, cols, &snake, fruit_x, fruit_y, obstacles);
-        send(client_socket, board, rows * cols, 0);
-        send(client_socket, &score, sizeof(score), 0);
+        if (!paused) {
+            // Aktualizácia herného sveta
+            update_board(board, rows, cols, &snake, fruit_x, fruit_y, obstacles);
+            move_snake(&snake, rows, cols);
+
+            if (check_collision(&snake, board, cols)) {
+                printf("Collision detected.\n");
+                break;
+            }
+
+            if (snake.x == fruit_x && snake.y == fruit_y) {
+                grow_snake(&snake, rows, cols);
+                score++;
+                generate_fruit(board, &fruit_x, &fruit_y, rows, cols);
+            }
+
+            if (game_mode == 2 && time(NULL) - start_time >= time_limit) {
+                break;
+            }
+
+          
+            send(client_socket, board, rows * cols, 0);
+            send(client_socket, &score, sizeof(score), 0);
+        }
+
+      
         char input;
         if (recv(client_socket, &input, 1, MSG_DONTWAIT) > 0) {
-            if (input == 'w' && snake.dy == 0) { snake.dx = 0; snake.dy = -1; }
-            if (input == 's' && snake.dy == 0) { snake.dx = 0; snake.dy = 1; }
-            if (input == 'a' && snake.dx == 0) { snake.dx = -1; snake.dy = 0; }
-            if (input == 'd' && snake.dx == 0) { snake.dx = 1; snake.dy = 0; }
-            if (input == 'q') {
-                printf("Client disconnected.\n");
+            if (input == 'p') {
+                paused = 1; 
+            } else if (input == 'r') {
+                paused = 0;
+            } else if (input == 'q') {
                 break;
-            }
-			if (input == 'p') {
-                printf("Paused game.\n");
-				break;
-			}
-        }
-
-        move_snake(&snake, rows, cols);
-        if (check_collision(&snake, board, cols)) {
-            printf("Game Over! Collision detected.\n");
-            break;
-        }
-
-        if (snake.x == fruit_x && snake.y == fruit_y) {
-            grow_snake(&snake, rows, cols);
-            score++;
-            generate_fruit(board, &fruit_x, &fruit_y, rows, cols);
-        }
-        if (game_mode == 2) {
-            if (time(NULL) - start_time >= time_limit) {
-                printf("Time's up! Game Over.\n");
-                break;
+            } else if (!paused) {
+                if (input == 'w' && snake.dy == 0) { snake.dx = 0; snake.dy = -1; }
+                if (input == 's' && snake.dy == 0) { snake.dx = 0; snake.dy = 1; }
+                if (input == 'a' && snake.dx == 0) { snake.dx = -1; snake.dy = 0; }
+                if (input == 'd' && snake.dx == 0) { snake.dx = 1; snake.dy = 0; }
             }
         }
+
         usleep(200000);
     }
-	
+
+    
     free(obstacles);
     free(board);
     free(snake.body_x);
     free(snake.body_y);
 }
 
-int start_server(int port) {
-    int server_socket = passive_socket_init(port);
+
+int start_server() {
+    int server_socket = passive_socket_init(50200);
     if (server_socket < 0) {
         perror("Failed to start server.\n");
         return -1;
@@ -206,4 +211,9 @@ int start_server(int port) {
     close(client_socket);
     close(server_socket);
     return 0;
+}
+
+int main() {
+	start_server();
+	return 1;
 }

@@ -6,43 +6,28 @@
 #include <sys/types.h>
 
 int main() {
-    
-        display_menu();
-        int choice = get_menu_choice();
-		
-        switch (choice) {
-            case 1: {			
-                pid_t pid = fork(); 
-                
-                if (pid < 0) {
-                    perror("Failed to fork");
-                    exit(1);
-                }
+    display_menu();
+    int choice = get_menu_choice();
 
-                if (pid == 0) {
-                    // child process - spustíme server
-                    printf("Starting server process...\n");
-                    start_server(50200);
-                    exit(0);
-                } else {
-                    // parent process - spustíme klienta
-                    sleep(1); // Počkáme, kým server začne počúvať
-                    printf("Starting client process...\n");
-                    start_client("localhost", 50200);
-                }
-                break;
-            }
-
-            case 2:
-                printf("Resume Game feature works only during pause. Start a new game first.\n");
-                break;
-
-            case 3:
-                printf("Exiting... Goodbye!\n");
-                return 0;
-
-            default:
-                printf("Invalid choice. Please try again.\n");
+    switch (choice) {
+        case 1: {
+            // Klient spúšťa server a následne pokračuje
+            printf("Starting New Game...\n");
+            start_client("localhost", 50200); // Klient najskôr spustí server a pripojí sa
+            break;
         }
+        case 2:
+            printf("Resume Game feature works only during pause. Start a new game first.\n");
+            break;
+
+        case 3:
+            printf("Exiting... Goodbye!\n");
+            return 0;
+
+        default:
+            printf("Invalid choice. Please try again.\n");
+            break;
+    }
+
     return 0;
 }

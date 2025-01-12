@@ -129,6 +129,19 @@ snake/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/snake.dir/build.make CMakeFiles/snake.dir/build
 .PHONY : snake/fast
 
+#=============================================================================
+# Target rules for targets named server
+
+# Build rule for target.
+server: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 server
+.PHONY : server
+
+# fast build rule for target.
+server/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/build
+.PHONY : server/fast
+
 client.o: client.c.o
 .PHONY : client.o
 
@@ -153,36 +166,12 @@ client.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/snake.dir/build.make CMakeFiles/snake.dir/client.c.s
 .PHONY : client.c.s
 
-main.o: main.c.o
-.PHONY : main.o
-
-# target to build an object file
-main.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/snake.dir/build.make CMakeFiles/snake.dir/main.c.o
-.PHONY : main.c.o
-
-main.i: main.c.i
-.PHONY : main.i
-
-# target to preprocess a source file
-main.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/snake.dir/build.make CMakeFiles/snake.dir/main.c.i
-.PHONY : main.c.i
-
-main.s: main.c.s
-.PHONY : main.s
-
-# target to generate assembly for a file
-main.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/snake.dir/build.make CMakeFiles/snake.dir/main.c.s
-.PHONY : main.c.s
-
 server.o: server.c.o
 .PHONY : server.o
 
 # target to build an object file
 server.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/snake.dir/build.make CMakeFiles/snake.dir/server.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/server.c.o
 .PHONY : server.c.o
 
 server.i: server.c.i
@@ -190,7 +179,7 @@ server.i: server.c.i
 
 # target to preprocess a source file
 server.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/snake.dir/build.make CMakeFiles/snake.dir/server.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/server.c.i
 .PHONY : server.c.i
 
 server.s: server.c.s
@@ -198,7 +187,7 @@ server.s: server.c.s
 
 # target to generate assembly for a file
 server.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/snake.dir/build.make CMakeFiles/snake.dir/server.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/server.c.s
 .PHONY : server.c.s
 
 socket.o: socket.c.o
@@ -207,6 +196,7 @@ socket.o: socket.c.o
 # target to build an object file
 socket.c.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/snake.dir/build.make CMakeFiles/snake.dir/socket.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/socket.c.o
 .PHONY : socket.c.o
 
 socket.i: socket.c.i
@@ -215,6 +205,7 @@ socket.i: socket.c.i
 # target to preprocess a source file
 socket.c.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/snake.dir/build.make CMakeFiles/snake.dir/socket.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/socket.c.i
 .PHONY : socket.c.i
 
 socket.s: socket.c.s
@@ -223,6 +214,7 @@ socket.s: socket.c.s
 # target to generate assembly for a file
 socket.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/snake.dir/build.make CMakeFiles/snake.dir/socket.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/socket.c.s
 .PHONY : socket.c.s
 
 # Help Target
@@ -233,13 +225,11 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... server"
 	@echo "... snake"
 	@echo "... client.o"
 	@echo "... client.i"
 	@echo "... client.s"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
 	@echo "... server.o"
 	@echo "... server.i"
 	@echo "... server.s"

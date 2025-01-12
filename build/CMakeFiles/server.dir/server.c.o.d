@@ -1,4 +1,4 @@
-CMakeFiles/snake.dir/server.c.o: /home/zubekova4/semka/server.c \
+CMakeFiles/server.dir/server.c.o: /home/zubekova4/semka/server.c \
  /usr/include/stdc-predef.h /home/zubekova4/semka/server.h \
  /home/zubekova4/semka/socket.h /usr/include/stdio.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \

@@ -1,3 +1,4 @@
 /home/zubekova4/semka/build/CMakeFiles/snake.dir
+/home/zubekova4/semka/build/CMakeFiles/server.dir
 /home/zubekova4/semka/build/CMakeFiles/edit_cache.dir
 /home/zubekova4/semka/build/CMakeFiles/rebuild_cache.dir
