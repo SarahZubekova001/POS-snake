@@ -24,7 +24,7 @@ typedef struct {
 
 void display_menu() {
 	printf("\033[H\033[J");
-    printf("=== Snake Game Menu ===\n");
+    printf("--- Snake Game Menu ---\n");
     printf("1. Start New Game\n");
     printf("2. Resume Game\n");
     printf("3. Exit\n");
